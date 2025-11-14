@@ -3,8 +3,8 @@ package com.laker.postman.service;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
-import com.laker.postman.ioc.Component;
-import com.laker.postman.ioc.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import com.laker.postman.model.ClientCertificate;
 import com.laker.postman.panel.sidebar.ConsolePanel;
 import com.laker.postman.util.I18nUtil;
@@ -24,17 +24,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 负责管理 mTLS 客户端证书配置
  */
 @Slf4j
-@Component
+@Singleton
 public class ClientCertificateService {
     private static final String CERT_CONFIG_FILE = SystemUtil.getUserHomeEasyPostmanPath() + "client_certificates.json";
     private static final List<ClientCertificate> certificates = new CopyOnWriteArrayList<>();
 
+    @Inject
+    public ClientCertificateService() {
+        load();
+    }
 
     /**
      * 从文件加载证书配置
      */
-    @PostConstruct
-    public void load() {
+    private void load() {
         File file = new File(CERT_CONFIG_FILE);
         if (!file.exists()) {
             log.info("Client certificate config file not found, creating new one");

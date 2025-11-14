@@ -5,14 +5,12 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.laker.postman.common.SingletonBasePanel;
 import com.laker.postman.common.SingletonFactory;
 import com.laker.postman.common.component.combobox.EnvironmentComboBox;
-import com.laker.postman.ioc.BeanFactory;
+import com.laker.postman.di.BeanFactory;
 import com.laker.postman.model.Workspace;
 import com.laker.postman.panel.collections.left.RequestCollectionsLeftPanel;
 import com.laker.postman.panel.env.EnvironmentPanel;
 import com.laker.postman.panel.topmenu.help.ChangelogDialog;
 import com.laker.postman.panel.topmenu.setting.ModernSettingsDialog;
-import com.laker.postman.service.ExitService;
-import com.laker.postman.service.UpdateService;
 import com.laker.postman.service.WorkspaceService;
 import com.laker.postman.util.*;
 import lombok.Getter;
@@ -53,7 +51,7 @@ public class TopMenuBarPanel extends SingletonBasePanel {
     @Override
     protected void registerListeners() {
         FlatDesktop.setAboutHandler(this::aboutActionPerformed);
-        FlatDesktop.setQuitHandler(e -> BeanFactory.getBean(ExitService.class).exit());
+        FlatDesktop.setQuitHandler(e -> BeanFactory.getComponent().exitService().exit());
     }
 
     /**
@@ -101,7 +99,7 @@ public class TopMenuBarPanel extends SingletonBasePanel {
         if (exitKey != null) {
             exitMenuItem.setAccelerator(exitKey);
         }
-        exitMenuItem.addActionListener(e -> BeanFactory.getBean(ExitService.class).exit());
+        exitMenuItem.addActionListener(e -> BeanFactory.getComponent().exitService().exit());
         fileMenu.add(logMenuItem);
         fileMenu.add(exitMenuItem);
         menuBar.add(fileMenu);
@@ -463,6 +461,6 @@ public class TopMenuBarPanel extends SingletonBasePanel {
      * 检查更新
      */
     private void checkUpdate() {
-        BeanFactory.getBean(UpdateService.class).checkUpdateManually();
+        BeanFactory.getComponent().updateService().checkUpdateManually();
     }
 }

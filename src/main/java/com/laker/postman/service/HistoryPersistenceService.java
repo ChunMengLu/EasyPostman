@@ -3,8 +3,8 @@ package com.laker.postman.service;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.laker.postman.ioc.Component;
-import com.laker.postman.ioc.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import com.laker.postman.model.HttpResponse;
 import com.laker.postman.model.PreparedRequest;
 import com.laker.postman.model.RequestHistoryItem;
@@ -27,14 +27,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 历史记录持久化管理器
  */
 @Slf4j
-@Component
+@Singleton
 public class HistoryPersistenceService {
     private static final String HISTORY_FILE = SystemUtil.getUserHomeEasyPostmanPath() + "request_history.json";
 
     private final List<RequestHistoryItem> historyItems = new CopyOnWriteArrayList<>();
 
-    @PostConstruct
-    public void init() {
+    @Inject
+    public HistoryPersistenceService() {
+        init();
+    }
+
+    private void init() {
         ensureHistoryDirExists();
         loadHistory();
     }

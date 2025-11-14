@@ -472,6 +472,7 @@ public final class MessageKeys {
     public static final String COLLECTIONS_IMPORT_EASY = "collections.import.easy";
     public static final String COLLECTIONS_IMPORT_POSTMAN = "collections.import.postman";
     public static final String COLLECTIONS_IMPORT_CURL = "collections.import.curl";
+    public static final String COLLECTIONS_IMPORT_HAR = "collections.import.har";
 
     // ============ 集合菜单相关 ============
     public static final String COLLECTIONS_MENU_ADD_GROUP = "collections.menu.add_group";
@@ -479,6 +480,7 @@ public final class MessageKeys {
     public static final String COLLECTIONS_MENU_ADD_REQUEST = "collections.menu.add_request";
     public static final String COLLECTIONS_MENU_DUPLICATE = "collections.menu.duplicate";
     public static final String COLLECTIONS_MENU_EXPORT_POSTMAN = "collections.menu.export_postman";
+    public static final String COLLECTIONS_MENU_EXPORT_HAR = "collections.menu.export_har";
     public static final String COLLECTIONS_MENU_COPY_CURL = "collections.menu.copy_curl";
     public static final String COLLECTIONS_MENU_RENAME = "collections.menu.rename";
     public static final String COLLECTIONS_MENU_DELETE = "collections.menu.delete";
@@ -492,6 +494,8 @@ public final class MessageKeys {
     public static final String COLLECTIONS_PASTE_SUCCESS = "collections.paste_success";
     public static final String COLLECTIONS_MENU_EXPORT_POSTMAN_SELECT_GROUP = "collections.menu.export_postman.select_group";
     public static final String COLLECTIONS_MENU_EXPORT_POSTMAN_DIALOG_TITLE = "collections.menu.export_postman.dialog_title";
+    public static final String COLLECTIONS_MENU_EXPORT_HAR_SELECT_GROUP = "collections.menu.export_har.select_group";
+    public static final String COLLECTIONS_MENU_EXPORT_HAR_DIALOG_TITLE = "collections.menu.export_har.dialog_title";
 
     // ============ 集合导出导入相关 ============
     public static final String COLLECTIONS_EXPORT_DIALOG_TITLE = "collections.export.dialog_title";
@@ -502,6 +506,8 @@ public final class MessageKeys {
     public static final String COLLECTIONS_IMPORT_FAIL = "collections.import.fail";
     public static final String COLLECTIONS_IMPORT_POSTMAN_DIALOG_TITLE = "collections.import.postman.dialog_title";
     public static final String COLLECTIONS_IMPORT_POSTMAN_INVALID = "collections.import.postman.invalid";
+    public static final String COLLECTIONS_IMPORT_HAR_DIALOG_TITLE = "collections.import.har.dialog_title";
+    public static final String COLLECTIONS_IMPORT_HAR_INVALID = "collections.import.har.invalid";
     public static final String COLLECTIONS_IMPORT_CURL_DIALOG_TITLE = "collections.import.curl.dialog_title";
     public static final String COLLECTIONS_IMPORT_CURL_DIALOG_PROMPT = "collections.import.curl.dialog_prompt";
     public static final String COLLECTIONS_IMPORT_CURL_PARSE_FAIL = "collections.import.curl.parse_fail";

@@ -1,6 +1,6 @@
 package com.laker.postman.service.http.ssl;
 
-import com.laker.postman.ioc.BeanFactory;
+import com.laker.postman.di.BeanFactory;
 import com.laker.postman.model.ClientCertificate;
 import com.laker.postman.panel.sidebar.ConsolePanel;
 import com.laker.postman.service.ClientCertificateService;
@@ -133,7 +133,7 @@ public class SSLConfigurationUtil {
         if (host == null || host.isEmpty()) {
             return new KeyManager[0];
         }
-        ClientCertificateService clientCertificateService = BeanFactory.getBean(ClientCertificateService.class);
+        ClientCertificateService clientCertificateService = BeanFactory.getComponent().clientCertificateService();
         ClientCertificate clientCert = clientCertificateService.findMatchingCertificate(host, port);
         if (clientCert == null || !clientCertificateService.validateCertificatePaths(clientCert)) {
             return new KeyManager[0];

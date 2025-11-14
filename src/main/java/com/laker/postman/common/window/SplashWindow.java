@@ -4,8 +4,8 @@ import com.laker.postman.common.SingletonFactory;
 import com.laker.postman.common.constants.Icons;
 import com.laker.postman.common.constants.ModernColors;
 import com.laker.postman.frame.MainFrame;
-import com.laker.postman.ioc.Component;
-import com.laker.postman.ioc.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import com.laker.postman.util.FontsUtil;
 import com.laker.postman.util.I18nUtil;
 import com.laker.postman.util.MessageKeys;
@@ -21,7 +21,7 @@ import java.io.Serial;
  * 启动欢迎窗口（Splash Window），用于主程序加载时的过渡。
  */
 @Slf4j
-@Component
+@Singleton
 public class SplashWindow extends JWindow {
     @Serial
     private static final long serialVersionUID = 1L; // 添加序列化ID
@@ -35,12 +35,15 @@ public class SplashWindow extends JWindow {
     private transient ActionListener fadeOutListener; // 渐隐监听器，用于防止内存泄漏
     private volatile boolean isDisposed = false; // 标记窗口是否已释放
 
+    @Inject
+    public SplashWindow() {
+        // Dagger 构造函数注入
+    }
 
     /**
      * Bean 初始化方法 - 在依赖注入完成后自动调用
      * 在 EDT 线程中初始化 UI 组件
      */
-    @PostConstruct
     public void init() {
         try {
             // 确保在 EDT 线程中初始化 UI

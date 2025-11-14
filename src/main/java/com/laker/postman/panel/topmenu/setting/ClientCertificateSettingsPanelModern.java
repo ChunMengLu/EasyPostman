@@ -2,9 +2,8 @@ package com.laker.postman.panel.topmenu.setting;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.laker.postman.common.constants.ModernColors;
-import com.laker.postman.ioc.BeanFactory;
+import com.laker.postman.di.BeanFactory;
 import com.laker.postman.model.ClientCertificate;
-import com.laker.postman.service.ClientCertificateService;
 import com.laker.postman.util.I18nUtil;
 import com.laker.postman.util.MessageKeys;
 import com.laker.postman.util.NotificationUtil;
@@ -257,7 +256,7 @@ public class ClientCertificateSettingsPanelModern extends ModernSettingsPanel {
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {
-            BeanFactory.getBean(ClientCertificateService.class).addCertificate(cert);
+            BeanFactory.getComponent().clientCertificateService().addCertificate(cert);
             loadCertificates();
             NotificationUtil.showSuccess(I18nUtil.getMessage(MessageKeys.CERT_ADD_SUCCESS));
         }
@@ -273,7 +272,7 @@ public class ClientCertificateSettingsPanelModern extends ModernSettingsPanel {
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {
-            BeanFactory.getBean(ClientCertificateService.class).updateCertificate(cert);
+            BeanFactory.getComponent().clientCertificateService().updateCertificate(cert);
             loadCertificates();
             NotificationUtil.showSuccess(I18nUtil.getMessage(MessageKeys.CERT_EDIT_SUCCESS));
         }
@@ -299,7 +298,7 @@ public class ClientCertificateSettingsPanelModern extends ModernSettingsPanel {
                 JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            BeanFactory.getBean(ClientCertificateService.class).deleteCertificate(cert.getId());
+            BeanFactory.getComponent().clientCertificateService().deleteCertificate(cert.getId());
             loadCertificates();
             updateButtonStates();
             NotificationUtil.showSuccess(I18nUtil.getMessage(MessageKeys.CERT_DELETE_SUCCESS));
@@ -340,7 +339,7 @@ public class ClientCertificateSettingsPanelModern extends ModernSettingsPanel {
         private List<ClientCertificate> certificates = new java.util.ArrayList<>();
 
         public void loadCertificates() {
-            certificates = BeanFactory.getBean(ClientCertificateService.class).getAllCertificates();
+            certificates = BeanFactory.getComponent().clientCertificateService().getAllCertificates();
             fireTableDataChanged();
         }
 
@@ -394,7 +393,7 @@ public class ClientCertificateSettingsPanelModern extends ModernSettingsPanel {
             if (columnIndex == 0) {
                 ClientCertificate cert = certificates.get(rowIndex);
                 cert.setEnabled((Boolean) aValue);
-                BeanFactory.getBean(ClientCertificateService.class).updateCertificate(cert);
+                BeanFactory.getComponent().clientCertificateService().updateCertificate(cert);
                 fireTableCellUpdated(rowIndex, columnIndex);
                 NotificationUtil.showSuccess(I18nUtil.getMessage(MessageKeys.CERT_STATUS_UPDATED));
             }

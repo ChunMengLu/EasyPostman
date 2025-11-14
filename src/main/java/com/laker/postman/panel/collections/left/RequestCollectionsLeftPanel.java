@@ -284,6 +284,14 @@ public class RequestCollectionsLeftPanel extends SingletonBasePanel {
                     exportPostmanItem.setEnabled(!isMultipleSelection);
                     menu.add(exportPostmanItem);
 
+                    // 导出为HAR
+                    JMenuItem exportHarItem = new JMenuItem(I18nUtil.getMessage(MessageKeys.COLLECTIONS_MENU_EXPORT_HAR),
+                            new FlatSVGIcon("icons/postman.svg", 16, 16));
+                    exportHarItem.addActionListener(e -> exportGroupAsHar(selectedNode));
+                    // 多选时禁用
+                    exportHarItem.setEnabled(!isMultipleSelection);
+                    menu.add(exportHarItem);
+
                     // 转移到其他工作区
                     JMenuItem moveToWorkspaceItem = new JMenuItem(I18nUtil.getMessage(MessageKeys.WORKSPACE_TRANSFER_MENU_ITEM),
                             new FlatSVGIcon("icons/workspace.svg", 16, 16));
@@ -937,6 +945,41 @@ public class RequestCollectionsLeftPanel extends SingletonBasePanel {
                 NotificationUtil.showSuccess(I18nUtil.getMessage(MessageKeys.COLLECTIONS_EXPORT_SUCCESS));
             } catch (Exception ex) {
                 log.error("Export Postman error", ex);
+                NotificationUtil.showError(I18nUtil.getMessage(MessageKeys.COLLECTIONS_EXPORT_FAIL, ex.getMessage()));
+            }
+        }
+    }
+
+    // 导出分组为HAR格式
+    private void exportGroupAsHar(DefaultMutableTreeNode groupNode) {
+        if (groupNode == null || !(groupNode.getUserObject() instanceof Object[] obj) || !GROUP.equals(obj[0])) {
+            JOptionPane.showMessageDialog(this,
+                    I18nUtil.getMessage(MessageKeys.COLLECTIONS_MENU_EXPORT_HAR_SELECT_GROUP),
+                    I18nUtil.getMessage(MessageKeys.GENERAL_TIP), JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 获取分组名称（支持 RequestGroup 对象和 String）
+        Object groupData = obj[1];
+        String groupName;
+        if (groupData instanceof RequestGroup group) {
+            groupName = group.getName();
+        } else {
+            groupName = String.valueOf(groupData);
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle(I18nUtil.getMessage(MessageKeys.COLLECTIONS_MENU_EXPORT_HAR_DIALOG_TITLE));
+        fileChooser.setSelectedFile(new File(groupName + ".har"));
+        int userSelection = fileChooser.showSaveDialog(SingletonFactory.getInstance(MainFrame.class));
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            try {
+                JSONObject har = com.laker.postman.service.har.HarExporter.buildHarFromTreeNode(groupNode, groupName);
+                FileUtil.writeUtf8String(har.toStringPretty(), fileToSave);
+                NotificationUtil.showSuccess(I18nUtil.getMessage(MessageKeys.COLLECTIONS_EXPORT_SUCCESS));
+            } catch (Exception ex) {
+                log.error("Export HAR error", ex);
                 NotificationUtil.showError(I18nUtil.getMessage(MessageKeys.COLLECTIONS_EXPORT_FAIL, ex.getMessage()));
             }
         }

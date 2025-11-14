@@ -2,9 +2,8 @@ package com.laker.postman.frame;
 
 import com.laker.postman.common.SingletonFactory;
 import com.laker.postman.common.constants.Icons;
-import com.laker.postman.ioc.BeanFactory;
+import com.laker.postman.di.BeanFactory;
 import com.laker.postman.panel.MainPanel;
-import com.laker.postman.service.ExitService;
 import com.laker.postman.util.I18nUtil;
 import com.laker.postman.util.MessageKeys;
 import com.laker.postman.util.UserSettingsUtil;
@@ -114,7 +113,7 @@ public class MainFrame extends JFrame {
                 // 清理资源并保存状态
                 cleanup();
                 saveWindowState();
-                BeanFactory.getBean(ExitService.class).exit();
+                BeanFactory.getComponent().exitService().exit();
             }
 
             @Override

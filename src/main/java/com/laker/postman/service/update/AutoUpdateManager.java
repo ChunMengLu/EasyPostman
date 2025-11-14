@@ -1,7 +1,6 @@
 package com.laker.postman.service.update;
 
 import cn.hutool.system.OsInfo;
-import com.laker.postman.ioc.Component;
 import com.laker.postman.model.UpdateInfo;
 import com.laker.postman.service.setting.SettingManager;
 import com.laker.postman.util.I18nUtil;
@@ -21,7 +20,6 @@ import java.util.concurrent.TimeUnit;
  * 采用责任链模式和观察者模式，提供更优雅的更新解决方案
  */
 @Slf4j
-@Component
 public class AutoUpdateManager {
 
     private final VersionChecker versionChecker;
