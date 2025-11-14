@@ -4,10 +4,7 @@ import cn.hutool.core.text.CharSequenceUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.laker.postman.common.SingletonFactory;
 import com.laker.postman.frame.MainFrame;
-import com.laker.postman.util.CsvDataUtil;
-import com.laker.postman.util.FontsUtil;
-import com.laker.postman.util.I18nUtil;
-import com.laker.postman.util.MessageKeys;
+import com.laker.postman.util.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -102,6 +99,11 @@ public class CsvDataPanel extends JPanel {
         loadCsvItem.addActionListener(e -> showEnhancedCsvManagementDialog());
         csvMenu.add(loadCsvItem);
 
+        JMenuItem createManualItem = new JMenuItem(I18nUtil.getMessage(MessageKeys.CSV_MENU_CREATE_MANUAL),
+                new FlatSVGIcon("icons/plus.svg", 16, 16));
+        createManualItem.addActionListener(e -> showManualCreateDialog());
+        csvMenu.add(createManualItem);
+
         JMenuItem manageCsvItem = new JMenuItem(I18nUtil.getMessage(MessageKeys.CSV_MENU_MANAGE_DATA),
                 new FlatSVGIcon("icons/code.svg", 16, 16));
         manageCsvItem.addActionListener(e -> showCsvDataManageDialog());
@@ -161,12 +163,193 @@ public class CsvDataPanel extends JPanel {
     }
 
     /**
+     * 手动创建 CSV 数据对话框
+     */
+    private void showManualCreateDialog() {
+        JDialog dialog = new JDialog(SingletonFactory.getInstance(MainFrame.class),
+                I18nUtil.getMessage(MessageKeys.CSV_CREATE_MANUAL_DIALOG_TITLE), true);
+        dialog.setSize(500, 320);
+        dialog.setLocationRelativeTo(SingletonFactory.getInstance(MainFrame.class));
+        dialog.setLayout(new BorderLayout());
+
+        // 顶部说明面板
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 10, 15));
+
+        JLabel titleLabel = new JLabel(I18nUtil.getMessage(MessageKeys.CSV_CREATE_MANUAL_DIALOG_TITLE));
+        titleLabel.setFont(FontsUtil.getDefaultFont(Font.BOLD, 16));
+        topPanel.add(titleLabel, BorderLayout.NORTH);
+
+        JLabel descLabel = new JLabel(I18nUtil.getMessage(MessageKeys.CSV_CREATE_MANUAL_DESCRIPTION));
+        descLabel.setFont(FontsUtil.getDefaultFont(Font.PLAIN, 12));
+        descLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+        topPanel.add(descLabel, BorderLayout.CENTER);
+
+        dialog.add(topPanel, BorderLayout.NORTH);
+
+        // 中间内容面板
+        JPanel contentPanel = new JPanel(new GridBagLayout());
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 15, 15));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        // 列数输入
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.3;
+        JLabel columnCountLabel = new JLabel(I18nUtil.getMessage(MessageKeys.CSV_CREATE_MANUAL_COLUMN_COUNT));
+        columnCountLabel.setFont(FontsUtil.getDefaultFont(Font.PLAIN, 12));
+        contentPanel.add(columnCountLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.7;
+        JTextField columnCountField = new JTextField("3");
+        columnCountField.setFont(FontsUtil.getDefaultFont(Font.PLAIN, 12));
+        contentPanel.add(columnCountField, gbc);
+
+        // 行数输入
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 0.3;
+        JLabel rowCountLabel = new JLabel(I18nUtil.getMessage(MessageKeys.CSV_CREATE_MANUAL_ROW_COUNT));
+        rowCountLabel.setFont(FontsUtil.getDefaultFont(Font.PLAIN, 12));
+        contentPanel.add(rowCountLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.7;
+        JTextField rowCountField = new JTextField("5");
+        rowCountField.setFont(FontsUtil.getDefaultFont(Font.PLAIN, 12));
+        contentPanel.add(rowCountField, gbc);
+
+        // 列标题输入
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.weightx = 0.3;
+        JLabel headersLabel = new JLabel(I18nUtil.getMessage(MessageKeys.CSV_CREATE_MANUAL_COLUMN_HEADERS));
+        headersLabel.setFont(FontsUtil.getDefaultFont(Font.PLAIN, 12));
+        contentPanel.add(headersLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.7;
+        JTextField headersField = new JTextField();
+        headersField.setFont(FontsUtil.getDefaultFont(Font.PLAIN, 12));
+        headersField.setText("username,password,email");
+        contentPanel.add(headersField, gbc);
+
+        // 占位符提示
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        JLabel placeholderLabel = new JLabel("eg: username,password,email");
+        placeholderLabel.setFont(FontsUtil.getDefaultFont(Font.ITALIC, 10));
+        placeholderLabel.setForeground(Color.GRAY);
+        contentPanel.add(placeholderLabel, gbc);
+
+        dialog.add(contentPanel, BorderLayout.CENTER);
+
+        // 底部按钮面板
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+
+        JButton createBtn = new JButton(I18nUtil.getMessage(MessageKeys.GENERAL_OK));
+        createBtn.addActionListener(e -> {
+            try {
+                // 验证列数
+                int columnCount;
+                try {
+                    columnCount = Integer.parseInt(columnCountField.getText().trim());
+                    if (columnCount < 1 || columnCount > 50) {
+                        NotificationUtil.showError(I18nUtil.getMessage(MessageKeys.CSV_CREATE_MANUAL_INVALID_COLUMN_COUNT));
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    NotificationUtil.showError(I18nUtil.getMessage(MessageKeys.CSV_CREATE_MANUAL_INVALID_COLUMN_COUNT));
+                    return;
+                }
+
+                // 验证行数
+                int rowCount;
+                try {
+                    rowCount = Integer.parseInt(rowCountField.getText().trim());
+                    if (rowCount < 1 || rowCount > 10000) {
+                        NotificationUtil.showError(I18nUtil.getMessage(MessageKeys.CSV_CREATE_MANUAL_INVALID_ROW_COUNT));
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    NotificationUtil.showError(I18nUtil.getMessage(MessageKeys.CSV_CREATE_MANUAL_INVALID_ROW_COUNT));
+                    return;
+                }
+
+                // 处理列标题
+                List<String> headers = new ArrayList<>();
+                String headersText = headersField.getText().trim();
+                if (CharSequenceUtil.isNotBlank(headersText)) {
+                    // 用户指定了列标题
+                    String[] headerArray = headersText.split(",");
+                    for (String header : headerArray) {
+                        headers.add(header.trim());
+                    }
+
+                    // 验证列标题数量
+                    if (headers.size() != columnCount) {
+                        NotificationUtil.showError(I18nUtil.getMessage(MessageKeys.CSV_CREATE_MANUAL_HEADERS_MISMATCH,
+                                headers.size(), columnCount));
+                        return;
+                    }
+                } else {
+                    // 自动生成列标题
+                    for (int i = 1; i <= columnCount; i++) {
+                        headers.add("Column" + i);
+                    }
+                }
+
+                // 创建空数据
+                List<Map<String, String>> newData = new ArrayList<>();
+                for (int i = 0; i < rowCount; i++) {
+                    Map<String, String> row = new java.util.LinkedHashMap<>();
+                    for (String header : headers) {
+                        row.put(header, "");
+                    }
+                    newData.add(row);
+                }
+
+                // 设置数据
+                csvData = newData;
+                csvHeaders = headers;
+                csvFile = null; // 清除文件引用，标记为手动创建
+                updateCsvStatus();
+
+                dialog.dispose();
+
+                // 自动打开数据管理对话框
+                showCsvDataManageDialog();
+
+            } catch (Exception ex) {
+                log.error("创建 CSV 数据失败", ex);
+                JOptionPane.showMessageDialog(dialog,
+                        I18nUtil.getMessage(MessageKeys.GENERAL_ERROR) + ": " + ex.getMessage(),
+                        I18nUtil.getMessage(MessageKeys.GENERAL_ERROR),
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        JButton cancelBtn = new JButton(I18nUtil.getMessage(MessageKeys.BUTTON_CANCEL));
+        cancelBtn.addActionListener(e -> dialog.dispose());
+
+        bottomPanel.add(createBtn);
+        bottomPanel.add(cancelBtn);
+        dialog.add(bottomPanel, BorderLayout.SOUTH);
+
+        dialog.setVisible(true);
+    }
+
+    /**
      * 增强的 CSV 文件管理对话框
      */
     private void showEnhancedCsvManagementDialog() {
         JDialog dialog = new JDialog(SingletonFactory.getInstance(MainFrame.class),
                 I18nUtil.getMessage(MessageKeys.CSV_DIALOG_MANAGEMENT_TITLE), true);
-        dialog.setSize(600, 430);
+        dialog.setSize(600, 480);
         dialog.setLocationRelativeTo(SingletonFactory.getInstance(MainFrame.class));
         dialog.setLayout(new BorderLayout());
 
@@ -210,14 +393,19 @@ public class CsvDataPanel extends JPanel {
         statusPanel.add(currentStatusLabel);
         contentPanel.add(statusPanel, BorderLayout.NORTH);
 
-        // 操作按钮面板 - 改为3行
-        JPanel actionPanel = new JPanel(new GridLayout(3, 1, 5, 10));
+        // 操作按钮面板 - 改为4行
+        JPanel actionPanel = new JPanel(new GridLayout(4, 1, 5, 10));
         actionPanel.setBorder(BorderFactory.createTitledBorder(I18nUtil.getMessage(MessageKeys.CSV_OPERATIONS)));
 
         // 选择文件按钮
         JButton selectFileBtn = new JButton(I18nUtil.getMessage(MessageKeys.CSV_BUTTON_SELECT_FILE));
         selectFileBtn.setIcon(new FlatSVGIcon("icons/file.svg", 16, 16));
         selectFileBtn.setPreferredSize(new Dimension(200, 35));
+
+        // 手动创建按钮
+        JButton createManualBtn = new JButton(I18nUtil.getMessage(MessageKeys.CSV_MENU_CREATE_MANUAL));
+        createManualBtn.setIcon(new FlatSVGIcon("icons/plus.svg", 16, 16));
+        createManualBtn.setPreferredSize(new Dimension(200, 35));
 
         // 管理数据按钮
         JButton manageDataBtn = new JButton(I18nUtil.getMessage(MessageKeys.CSV_BUTTON_MANAGE_DATA));
@@ -246,6 +434,11 @@ public class CsvDataPanel extends JPanel {
             }
         });
 
+        createManualBtn.addActionListener(e -> {
+            dialog.dispose();
+            showManualCreateDialog();
+        });
+
         manageDataBtn.addActionListener(e -> showCsvDataManageDialog());
 
         clearBtn.addActionListener(e -> {
@@ -258,6 +451,7 @@ public class CsvDataPanel extends JPanel {
         });
 
         actionPanel.add(selectFileBtn);
+        actionPanel.add(createManualBtn);
         actionPanel.add(manageDataBtn);
         actionPanel.add(clearBtn);
 
@@ -427,6 +621,11 @@ public class CsvDataPanel extends JPanel {
         JButton deleteRowBtn = new JButton(I18nUtil.getMessage(MessageKeys.CSV_BUTTON_DELETE_ROW));
         deleteRowBtn.setIcon(new FlatSVGIcon("icons/clear.svg", 16, 16));
         deleteRowBtn.addActionListener(e -> {
+            // 先停止单元格编辑，避免编辑状态下删除行导致问题
+            if (csvTable.isEditing()) {
+                csvTable.getCellEditor().stopCellEditing();
+            }
+
             int[] selectedRows = csvTable.getSelectedRows();
             if (selectedRows.length == 0) {
                 JOptionPane.showMessageDialog(manageDialog, I18nUtil.getMessage(MessageKeys.CSV_SELECT_ROWS_TO_DELETE),
@@ -464,6 +663,11 @@ public class CsvDataPanel extends JPanel {
         JButton deleteColumnBtn = new JButton(I18nUtil.getMessage(MessageKeys.CSV_BUTTON_DELETE_COLUMN));
         deleteColumnBtn.setIcon(new FlatSVGIcon("icons/clear.svg", 16, 16));
         deleteColumnBtn.addActionListener(e -> {
+            // 先停止单元格编辑，避免编辑状态下删除列导致问题
+            if (csvTable.isEditing()) {
+                csvTable.getCellEditor().stopCellEditing();
+            }
+
             int[] selectedColumns = csvTable.getSelectedColumns();
             if (selectedColumns.length == 0) {
                 JOptionPane.showMessageDialog(manageDialog, I18nUtil.getMessage(MessageKeys.CSV_SELECT_COLUMNS_TO_DELETE),
