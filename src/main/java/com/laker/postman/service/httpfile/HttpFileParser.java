@@ -20,7 +20,6 @@ import static com.laker.postman.panel.collections.right.request.sub.AuthTabPanel
  */
 @Slf4j
 public class HttpFileParser {
-
     // 常量定义
     private static final String GROUP = "group";
     private static final String REQUEST = "request";
@@ -133,8 +132,6 @@ public class HttpFileParser {
             if (methodMatcher.matches()) {
                 String method = methodMatcher.group(1).toUpperCase();
                 String url = methodMatcher.group(2).trim();
-                // 处理变量替换 {{variable}}
-                url = replaceVariables(url);
                 currentRequest.setMethod(method);
                 currentRequest.setUrl(url);
                 continue;
@@ -158,8 +155,6 @@ public class HttpFileParser {
             if (headerMatcher.matches() && !inBody) {
                 String headerName = headerMatcher.group(1).trim();
                 String headerValue = headerMatcher.group(2).trim();
-                headerValue = replaceVariables(headerValue);
-
                 // 处理 Authorization 头部
                 if ("Authorization".equalsIgnoreCase(headerName)) {
                     parseAuthorization(currentRequest, headerValue);
@@ -180,7 +175,7 @@ public class HttpFileParser {
                  "PATCH".equals(currentRequest.getMethod()) ||
                  "DELETE".equals(currentRequest.getMethod()))) {
                 inBody = true;
-                if (bodyBuilder != null && bodyBuilder.length() > 0) {
+                if (bodyBuilder != null && !bodyBuilder.isEmpty()) {
                     bodyBuilder.append("\n");
                 }
                 if (bodyBuilder == null) {
@@ -213,7 +208,7 @@ public class HttpFileParser {
         }
 
         // 处理 body
-        if (bodyBuilder != null && bodyBuilder.length() > 0) {
+        if (bodyBuilder != null && !bodyBuilder.isEmpty()) {
             String body = bodyBuilder.toString().trim();
             if (!body.isEmpty()) {
                 // 根据 Content-Type 处理 body
@@ -309,15 +304,5 @@ public class HttpFileParser {
         }
     }
 
-    /**
-     * 替换变量 {{variable}}
-     */
-    private static String replaceVariables(String text) {
-        if (text == null) {
-            return "";
-        }
-        // 简单替换，实际使用时可能需要从环境变量中获取
-        return text.replaceAll("\\{\\{([^}]+)}}", "{{$1}}");
-    }
 }
 

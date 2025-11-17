@@ -149,17 +149,17 @@ public class LeftTopPanel extends SingletonBasePanel {
         JMenuItem importHarItem = new JMenuItem(I18nUtil.getMessage(MessageKeys.COLLECTIONS_IMPORT_HAR),
                 new FlatSVGIcon("icons/H.svg", 20, 20));
         importHarItem.addActionListener(e -> importHarCollection());
-        JMenuItem importCurlItem = new JMenuItem(I18nUtil.getMessage(MessageKeys.COLLECTIONS_IMPORT_CURL),
-                new FlatSVGIcon("icons/curl.svg", 20, 20));
-        importCurlItem.addActionListener(e -> importCurlToCollection(null));
         JMenuItem importHttpItem = new JMenuItem(I18nUtil.getMessage(MessageKeys.COLLECTIONS_IMPORT_HTTP),
                 new FlatSVGIcon("icons/http.svg", 20, 20));
         importHttpItem.addActionListener(e -> importHttpFile());
+        JMenuItem importCurlItem = new JMenuItem(I18nUtil.getMessage(MessageKeys.COLLECTIONS_IMPORT_CURL),
+                new FlatSVGIcon("icons/curl.svg", 20, 20));
+        importCurlItem.addActionListener(e -> importCurlToCollection(null));
         importMenu.add(importEasyToolsItem);
         importMenu.add(importPostmanItem);
         importMenu.add(importHarItem);
-        importMenu.add(importCurlItem);
         importMenu.add(importHttpItem);
+        importMenu.add(importCurlItem);
         return importMenu;
     }
 
