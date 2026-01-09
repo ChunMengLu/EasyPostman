@@ -7,14 +7,16 @@ import com.laker.postman.util.MessageKeys;
 import javax.swing.*;
 
 /**
- * 通用开始按钮，带图标和统一样式。
+ * 通用导出按钮,带图标和统一样式。
  */
-public class StartButton extends JButton {
-    public StartButton() {
-        super(I18nUtil.getMessage(MessageKeys.BUTTON_START));
-        FlatSVGIcon icon = new FlatSVGIcon("icons/start.svg", 20, 20);
+public class ExportButton extends JButton {
+    public ExportButton() {
+        super();
+        FlatSVGIcon icon = new FlatSVGIcon("icons/export.svg", 20, 20);
         icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
         setIcon(icon);
         setFocusable(false); // 去掉按钮的焦点边框
+        setToolTipText(I18nUtil.getMessage(MessageKeys.COLLECTIONS_EXPORT_TOOLTIP));
     }
 }
+
